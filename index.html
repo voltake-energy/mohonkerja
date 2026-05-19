@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Borang Permohonan Kerja Profesional</title>
+    <!-- Logo sebagai Favicon -->
     <link rel="icon" type="image/png" href="https://i.postimg.cc/sfWhtSf7/energy-services.png">
     
     <!-- Tailwind CSS -->
@@ -26,9 +27,10 @@
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- html2pdf.js untuk convert HTML preview ke PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <!-- Custom Styles untuk A4 Preview & Layout -->
     <style>
@@ -40,29 +42,17 @@
         }
 
         /* Scrollbar Styling */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-        .dark ::-webkit-scrollbar-thumb {
-            background: #475569;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
         /* A4 Paper Styling */
         .a4-container {
             width: 100%;
             max-width: 210mm; /* A4 Width */
-            min-height: 297mm; /* A4 Height */
+            min-height: 275mm; /* A4 Height */
             background-color: white;
             color: black;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
@@ -71,44 +61,42 @@
             border: 1px solid #e5e7eb;
             box-sizing: border-box;
             position: relative;
+            page-break-after: always;
         }
         
         /* Ensure A4 content stays black & white even in dark mode */
-        .a4-container * {
-            border-color: #cbd5e1 !important;
-        }
-        .a4-container h1, .a4-container h2, .a4-container h3 {
-            color: #111827;
-        }
-        .a4-container p, .a4-container span, .a4-container td, .a4-container th {
-            color: #374151;
-        }
+        .a4-container * { border-color: #000000 !important; }
+        .a4-container h1, .a4-container h2, .a4-container h3 { color: #000000 !important; }
+        .a4-container p, .a4-container span, .a4-container td, .a4-container th { color: #000000 !important; }
         
         .a4-section-title {
-            border-bottom: 2px solid #111827;
+            border-bottom: 2px solid #000000 !important;
             padding-bottom: 4px;
             margin-bottom: 12px;
             margin-top: 24px;
-            font-weight: 600;
+            font-weight: bold;
             text-transform: uppercase;
             font-size: 1.1rem;
-            color: #111827;
+            color: #000000 !important;
         }
 
+        /* Styling A4 tables */
         .a4-table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: collapse !important;
             margin-top: 10px;
             font-size: 0.9rem;
+            border: 1px solid #000000 !important;
         }
         .a4-table th, .a4-table td {
-            border: 1px solid #94a3b8 !important;
+            border: 1px solid #000000 !important;
             padding: 6px 10px;
             text-align: left;
         }
-        .a4-table th {
-            background-color: #f1f5f9;
-            font-weight: 600;
+        .a4-table th, .a4-table .bg-gray-50, .a4-table .bg-gray-200 {
+            background-color: #e5e7eb !important;
+            font-weight: bold !important;
+            color: #000000 !important;
         }
 
         /* Form Inputs Styling */
@@ -136,6 +124,7 @@
             box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
         }
 
+        /* STREAMING_CHUNK:Styling signature pad and layout panels... -->
         /* Signature Canvas */
         #signature-pad {
             border: 1px dashed #94a3b8;
@@ -171,7 +160,6 @@
                 margin: 0;
                 padding: 0;
                 width: 100%;
-                page-break-after: always;
             }
             .no-print { display: none !important; }
         }
@@ -182,6 +170,7 @@
     <!-- Header -->
     <header class="h-16 bg-white dark:bg-gray-800 shadow-sm flex items-center justify-between px-6 z-10 relative">
         <div class="flex items-center gap-3">
+            <!-- Logo Syarikat -->
             <img src="https://i.postimg.cc/sfWhtSf7/energy-services.png" alt="Logo Rasmi" class="h-10 object-contain drop-shadow-sm">
             <h1 class="text-xl font-bold hidden sm:block">Portal Permohonan Kerjaya</h1>
         </div>
@@ -190,7 +179,7 @@
                 <i class="fa-solid fa-moon text-gray-600 dark:text-gray-300" id="theme-icon"></i>
             </button>
             <button onclick="window.print()" class="hidden md:flex items-center gap-2 bg-gray-800 dark:bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition text-sm">
-                <i class="fa-solid fa-print"></i> Cetak / PDF
+                <i class="fa-solid fa-print"></i> Cetak Dokumen
             </button>
         </div>
     </header>
@@ -201,12 +190,12 @@
         <!-- LEFT PANEL: FORM -->
         <div class="w-full lg:w-1/2 panel-scroll p-4 md:p-8 space-y-6" id="form-panel">
             
-            <div id="success-msg" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-                <strong class="font-bold">Berjaya!</strong>
-                <span class="block sm:inline">Permohonan anda telah berjaya disimpan.</span>
+            <div id="success-msg" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative shadow-sm" role="alert">
+                <strong class="font-bold"><i class="fa-solid fa-circle-check"></i> Berjaya!</strong>
+                <span class="block sm:inline">Permohonan, Gambar & PDF anda telah berjaya dihantar ke pangkalan data.</span>
             </div>
 
-            <form id="application-form" class="space-y-8" onsubmit="event.preventDefault(); submitForm();">
+            <form id="application-form" class="space-y-8" onsubmit="event.preventDefault(); handleFormAction();">
                 
                 <!-- Bahagian 1: Maklumat Asas -->
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
@@ -220,46 +209,46 @@
                                 <img id="form-photo-img" src="" class="hidden w-full h-full object-cover">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium mb-1">Muat Naik Gambar <span class="text-red-500">*</span></label>
-                                <input type="file" id="photo-input" accept="image/*" class="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-gray-700 dark:file:text-gray-300" required>
+                                <label class="block text-sm font-medium mb-1">Muat Naik Gambar</label>
+                                <input type="file" id="photo-input" accept="image/*" class="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-gray-700 dark:file:text-gray-300">
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium mb-1">Jawatan Dipohon <span class="text-red-500">*</span></label>
-                            <input type="text" id="f-jawatan" class="input-field" placeholder="Cth: Pegawai IT" required>
+                            <label class="block text-sm font-medium mb-1">Jawatan Dipohon</label>
+                            <input type="text" id="f-jawatan" class="input-field" placeholder="Cth: Pegawai IT">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-1">Nama Penuh <span class="text-red-500">*</span></label>
-                            <input type="text" id="f-nama" class="input-field" placeholder="Nama mengikut kad pengenalan" required>
+                            <label class="block text-sm font-medium mb-1">Nama Penuh</label>
+                            <input type="text" id="f-nama" class="input-field" placeholder="Nama mengikut kad pengenalan">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-1">No Kad Pengenalan <span class="text-red-500">*</span></label>
-                            <input type="text" id="f-ic" class="input-field" placeholder="Cth: 900101-14-5123" required>
+                            <label class="block text-sm font-medium mb-1">No Kad Pengenalan</label>
+                            <input type="text" id="f-ic" class="input-field" placeholder="Cth: 900101-14-5123">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-1">Tarikh Lahir <span class="text-red-500">*</span></label>
-                            <input type="date" id="f-dob" class="input-field" required>
+                            <label class="block text-sm font-medium mb-1">Tarikh Lahir</label>
+                            <input type="date" id="f-dob" class="input-field">
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-1">No Telefon Rumah</label>
                             <input type="tel" id="f-tel-rumah" class="input-field" placeholder="Cth: 03-1234567">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-1">No Telefon Bimbit <span class="text-red-500">*</span></label>
-                            <input type="tel" id="f-tel-bimbit" class="input-field" placeholder="Cth: 012-3456789" required>
+                            <label class="block text-sm font-medium mb-1">No Telefon Bimbit</label>
+                            <input type="tel" id="f-tel-bimbit" class="input-field" placeholder="Cth: 012-3456789">
                         </div>
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-medium mb-1">Alamat Penuh <span class="text-red-500">*</span></label>
-                            <textarea id="f-alamat" rows="3" class="input-field" placeholder="Sila masukkan alamat lengkap" required></textarea>
+                            <label class="block text-sm font-medium mb-1">Alamat Penuh</label>
+                            <textarea id="f-alamat" rows="3" class="input-field" placeholder="Sila masukkan alamat lengkap"></textarea>
                         </div>
                         
                         <!-- Radio Jantina -->
                         <div>
-                            <label class="block text-sm font-medium mb-2">Jantina <span class="text-red-500">*</span></label>
+                            <label class="block text-sm font-medium mb-2">Jantina</label>
                             <div class="flex gap-4">
                                 <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="radio" name="jantina" value="Lelaki" class="w-4 h-4 text-blue-600 focus:ring-blue-500" required>
+                                    <input type="radio" name="jantina" value="Lelaki" class="w-4 h-4 text-blue-600 focus:ring-blue-500">
                                     <span>Lelaki</span>
                                 </label>
                                 <label class="flex items-center gap-2 cursor-pointer">
@@ -271,9 +260,9 @@
 
                         <!-- Radio Taraf Perkahwinan -->
                         <div>
-                            <label class="block text-sm font-medium mb-2">Taraf Perkahwinan <span class="text-red-500">*</span></label>
+                            <label class="block text-sm font-medium mb-2">Taraf Perkahwinan</label>
                             <div class="flex flex-wrap gap-4">
-                                <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="status_kahwin" value="Bujang" class="w-4 h-4 text-blue-600" required> Bujang</label>
+                                <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="status_kahwin" value="Bujang" class="w-4 h-4 text-blue-600"> Bujang</label>
                                 <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="status_kahwin" value="Berkahwin" class="w-4 h-4 text-blue-600"> Berkahwin</label>
                                 <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="status_kahwin" value="Janda" class="w-4 h-4 text-blue-600"> Janda</label>
                                 <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="status_kahwin" value="Duda" class="w-4 h-4 text-blue-600"> Duda</label>
@@ -353,21 +342,21 @@
                             <h3 class="font-medium mb-3">Hubungan Kecemasan</h3>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-1">Penama No Kecemasan <span class="text-red-500">*</span></label>
-                            <input type="text" id="f-nama-kecemasan" class="input-field" required>
+                            <label class="block text-sm font-medium mb-1">Penama No Kecemasan</label>
+                            <input type="text" id="f-nama-kecemasan" class="input-field">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-1">Hubungan Pertalian <span class="text-red-500">*</span></label>
-                            <input type="text" id="f-hubungan-kecemasan" class="input-field" placeholder="Cth: Isteri / Bapa" required>
+                            <label class="block text-sm font-medium mb-1">Hubungan Pertalian</label>
+                            <input type="text" id="f-hubungan-kecemasan" class="input-field" placeholder="Cth: Isteri / Bapa">
                         </div>
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-medium mb-1">No Telefon Kecemasan <span class="text-red-500">*</span></label>
+                            <label class="block text-sm font-medium mb-1">No Telefon Kecemasan</label>
                             <div class="flex gap-2">
                                 <select id="f-jenis-tel-kecemasan" class="input-field w-1/3">
                                     <option value="Bimbit">Bimbit</option>
                                     <option value="Rumah">Rumah</option>
                                 </select>
-                                <input type="tel" id="f-tel-kecemasan" class="input-field w-2/3" placeholder="Nombor telefon" required>
+                                <input type="tel" id="f-tel-kecemasan" class="input-field w-2/3" placeholder="Nombor telefon">
                             </div>
                         </div>
                     </div>
@@ -381,11 +370,11 @@
                         <!-- Siasatan -->
                         <div class="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg">
                             <label class="block text-sm font-medium mb-2 text-justify">
-                                Adakah anda pernah mempunyai rekod jenayah, sedang dalam siasatan, atau pernah disabitkan atas mana-mana kesalahan di bawah undang-undang? <span class="text-red-500">*</span>
+                                Adakah anda pernah mempunyai rekod jenayah, sedang dalam siasatan, atau pernah disabitkan atas mana-mana kesalahan di bawah undang-undang?
                             </label>
                             <div class="flex gap-4 mb-3">
                                 <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="radio" name="jenayah" value="Ya" class="w-4 h-4 text-blue-600" onchange="toggleJenayahReason(true)" required>
+                                    <input type="radio" name="jenayah" value="Ya" class="w-4 h-4 text-blue-600" onchange="toggleJenayahReason(true)">
                                     <span>Ya</span>
                                 </label>
                                 <label class="flex items-center gap-2 cursor-pointer">
@@ -401,8 +390,8 @@
 
                         <!-- Gaji -->
                         <div>
-                            <label class="block text-sm font-medium mb-1">Gaji Yang Dipohon (RM) <span class="text-red-500">*</span></label>
-                            <input type="number" id="f-gaji" class="input-field" placeholder="Cth: 3000" required>
+                            <label class="block text-sm font-medium mb-1">Gaji Yang Dipohon (RM)</label>
+                            <input type="number" id="f-gaji" class="input-field" placeholder="Cth: 3000">
                         </div>
 
                         <!-- Rujukan -->
@@ -412,18 +401,18 @@
                                 <!-- Rujukan 1 -->
                                 <div class="border border-gray-200 dark:border-gray-600 p-3 rounded-lg space-y-2">
                                     <div class="font-medium text-xs text-gray-500 uppercase">Rujukan 1</div>
-                                    <input type="text" id="f-ref1-nama" class="input-field text-sm" placeholder="Nama" required>
-                                    <input type="text" id="f-ref1-jawatan" class="input-field text-sm" placeholder="Jawatan" required>
-                                    <input type="text" id="f-ref1-syarikat" class="input-field text-sm" placeholder="Organisasi / Syarikat" required>
-                                    <input type="tel" id="f-ref1-tel" class="input-field text-sm" placeholder="No Telefon" required>
+                                    <input type="text" id="f-ref1-nama" class="input-field text-sm" placeholder="Nama">
+                                    <input type="text" id="f-ref1-jawatan" class="input-field text-sm" placeholder="Jawatan">
+                                    <input type="text" id="f-ref1-syarikat" class="input-field text-sm" placeholder="Organisasi / Syarikat">
+                                    <input type="tel" id="f-ref1-tel" class="input-field text-sm" placeholder="No Telefon">
                                 </div>
                                 <!-- Rujukan 2 -->
                                 <div class="border border-gray-200 dark:border-gray-600 p-3 rounded-lg space-y-2">
                                     <div class="font-medium text-xs text-gray-500 uppercase">Rujukan 2</div>
-                                    <input type="text" id="f-ref2-nama" class="input-field text-sm" placeholder="Nama" required>
-                                    <input type="text" id="f-ref2-jawatan" class="input-field text-sm" placeholder="Jawatan" required>
-                                    <input type="text" id="f-ref2-syarikat" class="input-field text-sm" placeholder="Organisasi / Syarikat" required>
-                                    <input type="tel" id="f-ref2-tel" class="input-field text-sm" placeholder="No Telefon" required>
+                                    <input type="text" id="f-ref2-nama" class="input-field text-sm" placeholder="Nama">
+                                    <input type="text" id="f-ref2-jawatan" class="input-field text-sm" placeholder="Jawatan">
+                                    <input type="text" id="f-ref2-syarikat" class="input-field text-sm" placeholder="Organisasi / Syarikat">
+                                    <input type="tel" id="f-ref2-tel" class="input-field text-sm" placeholder="No Telefon">
                                 </div>
                             </div>
                         </div>
@@ -439,7 +428,7 @@
                             <p class="mb-3 font-semibold">Adakah anda bersetuju untuk pihak organisasi menjalankan semakan latar belakang sekiranya diperlukan?</p>
                             <div class="flex gap-4 mb-3">
                                 <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="radio" name="kebenaran_semak" value="Ya" class="w-4 h-4 text-blue-600" required>
+                                    <input type="radio" name="kebenaran_semak" value="Ya" class="w-4 h-4 text-blue-600">
                                     <span>Ya</span>
                                 </label>
                                 <label class="flex items-center gap-2 cursor-pointer">
@@ -452,7 +441,7 @@
 
                         <div>
                             <label class="block text-sm font-medium mb-2 flex justify-between items-center">
-                                Tandatangan Digital Pemohon <span class="text-red-500">*</span>
+                                Tandatangan Digital Pemohon
                                 <button type="button" onclick="clearSignature()" class="text-xs text-red-500 hover:underline"><i class="fa-solid fa-eraser"></i> Padam</button>
                             </label>
                             <canvas id="signature-pad" class="w-full h-40 touch-none"></canvas>
@@ -466,10 +455,15 @@
                     </div>
                 </div>
 
-                <!-- Submit Button -->
-                <div class="sticky bottom-4 z-20">
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-transform transform hover:-translate-y-1">
-                        <i class="fa-solid fa-paper-plane mr-2"></i> Hantar Permohonan
+                <!-- Submit Button Area -->
+                <div class="sticky bottom-4 z-20 flex flex-col gap-3">
+                    <button type="submit" id="preview-btn" class="w-full bg-gray-700 hover:bg-gray-800 dark:bg-gray-600 dark:hover:bg-gray-500 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-transform transform hover:-translate-y-1 flex justify-center items-center">
+                        <i class="fa-solid fa-eye mr-2"></i> Semak Preview Dahulu
+                    </button>
+                    
+                    <button type="button" id="submit-btn" onclick="submitForm()" class="hidden w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl shadow-lg transition-transform transform hover:-translate-y-1 flex justify-center items-center">
+                        <i class="fa-solid fa-paper-plane mr-2" id="submit-icon"></i> 
+                        <span id="submit-text">Hantar & Muat Turun PDF</span>
                     </button>
                 </div>
             </form>
@@ -484,215 +478,219 @@
                 <i class="fa-solid fa-eye mr-1"></i> Live Preview Dokumen
             </div>
 
-            <!-- PAGE 1: Maklumat Asas -->
-            <div class="a4-container">
-                <div class="text-center border-b-2 border-black pb-4 mb-6 flex flex-col items-center">
-                    <img src="https://i.postimg.cc/sfWhtSf7/energy-services.png" alt="Official Logo" class="h-16 object-contain mb-3">
-                    <h1 class="text-2xl font-bold uppercase tracking-wider">Borang Permohonan Jawatan</h1>
-                    <p class="text-sm text-gray-600 mt-1">Sila pastikan maklumat diisi dengan lengkap dan tepat.</p>
-                </div>
-
-                <div class="flex justify-between items-start mb-6">
-                    <div class="w-2/3 pr-4">
-                        <table class="w-full text-sm">
-                            <tr>
-                                <td class="font-semibold py-1 w-1/3">Jawatan Dipohon</td>
-                                <td class="py-1 px-2">:</td>
-                                <td class="py-1 border-b border-dashed border-gray-400 font-medium text-blue-700" id="p-jawatan"></td>
-                            </tr>
-                        </table>
+            <!-- Wrapper untuk HTML2PDF Export agar style terjaga -->
+            <div id="pdf-content" class="w-full flex flex-col items-center">
+                <!-- PAGE 1: Maklumat Asas -->
+                <div class="a4-container">
+                    <div class="text-center border-b-2 border-black pb-4 mb-6 flex flex-col items-center">
+                        <img src="https://i.postimg.cc/sfWhtSf7/energy-services.png" alt="Official Logo" class="h-16 object-contain mb-3">
+                        <h1 class="text-2xl font-bold uppercase tracking-wider">Borang Permohonan Jawatan</h1>
+                        <p class="text-sm text-gray-600 mt-1">Sila pastikan maklumat diisi dengan lengkap dan tepat.</p>
                     </div>
-                    <!-- Photo Display -->
-                    <div class="w-[35mm] h-[45mm] border border-gray-400 flex items-center justify-center bg-gray-50 overflow-hidden relative">
-                        <span class="text-xs text-gray-400 text-center px-2 absolute z-0">Gambar Ukuran Pasport</span>
-                        <img id="p-photo" src="" class="hidden w-full h-full object-cover relative z-10">
-                    </div>
-                </div>
 
-                <h2 class="a4-section-title">A. Maklumat Peribadi</h2>
-                <table class="a4-table">
-                    <tr>
-                        <td class="w-1/3 font-semibold bg-gray-50">Nama Penuh</td>
-                        <td colspan="3" id="p-nama" class="uppercase font-medium"></td>
-                    </tr>
-                    <tr>
-                        <td class="font-semibold bg-gray-50">No. Kad Pengenalan</td>
-                        <td id="p-ic"></td>
-                        <td class="font-semibold bg-gray-50 w-1/4">Tarikh Lahir</td>
-                        <td id="p-dob"></td>
-                    </tr>
-                    <tr>
-                        <td class="font-semibold bg-gray-50">Jantina</td>
-                        <td id="p-jantina"></td>
-                        <td class="font-semibold bg-gray-50">Taraf Perkahwinan</td>
-                        <td id="p-status_kahwin"></td>
-                    </tr>
-                    <tr>
-                        <td class="font-semibold bg-gray-50 align-top">Alamat Semasa</td>
-                        <td colspan="3" id="p-alamat" class="whitespace-pre-line uppercase"></td>
-                    </tr>
-                    <tr>
-                        <td class="font-semibold bg-gray-50">No. Telefon Bimbit</td>
-                        <td id="p-tel-bimbit"></td>
-                        <td class="font-semibold bg-gray-50">No. Telefon Rumah</td>
-                        <td id="p-tel-rumah"></td>
-                    </tr>
-                </table>
-
-                <h2 class="a4-section-title">B. Maklumat Akademik</h2>
-                <table class="a4-table text-center" id="p-academic-table">
-                    <thead>
-                        <tr>
-                            <th class="text-center w-[15%]">Tahun Dari</th>
-                            <th class="text-center w-[15%]">Tahun Hingga</th>
-                            <th class="text-left w-[40%]">Sekolah / Pusat Pengajian</th>
-                            <th class="text-left w-[30%]">Kelulusan</th>
-                        </tr>
-                    </thead>
-                    <tbody id="p-academic-tbody">
-                        <tr><td colspan="4" class="text-gray-400 italic text-center py-2">Sila tambah maklumat di ruangan borang</td></tr>
-                    </tbody>
-                </table>
-                
-                <!-- Footer A4 -->
-                <div class="absolute bottom-6 right-8 text-xs text-gray-500">Muka Surat 1 / 3</div>
-            </div>
-
-            <!-- PAGE 2: Pengalaman & Kewangan -->
-            <div class="a4-container">
-                <h2 class="a4-section-title mt-0">C. Pengalaman Kerja</h2>
-                <table class="a4-table text-center" id="p-work-table">
-                    <thead>
-                        <tr>
-                            <th class="text-center w-[15%]">Tahun Dari</th>
-                            <th class="text-center w-[15%]">Tahun Hingga</th>
-                            <th class="text-left w-[40%]">Majikan</th>
-                            <th class="text-left w-[30%]">Jawatan</th>
-                        </tr>
-                    </thead>
-                    <tbody id="p-work-tbody">
-                        <tr><td colspan="4" class="text-gray-400 italic text-center py-2">Sila tambah maklumat di ruangan borang</td></tr>
-                    </tbody>
-                </table>
-
-                <h2 class="a4-section-title">D. Maklumat Kewangan & Kecemasan</h2>
-                <table class="a4-table">
-                    <tr>
-                        <td class="w-1/3 font-semibold bg-gray-50">No. SOCSO</td>
-                        <td id="p-socso"></td>
-                        <td class="w-1/4 font-semibold bg-gray-50">No. KWSP</td>
-                        <td id="p-kwsp"></td>
-                    </tr>
-                </table>
-                <br>
-                <table class="a4-table">
-                    <tr>
-                        <td colspan="4" class="font-semibold bg-gray-200 text-center">Hubungan Kecemasan</td>
-                    </tr>
-                    <tr>
-                        <td class="w-1/4 font-semibold bg-gray-50">Penama</td>
-                        <td id="p-nama-kecemasan" colspan="3"></td>
-                    </tr>
-                    <tr>
-                        <td class="font-semibold bg-gray-50">Hubungan</td>
-                        <td id="p-hubungan-kecemasan"></td>
-                        <td class="w-1/4 font-semibold bg-gray-50">No Telefon (<span id="p-jenis-tel-kecemasan"></span>)</td>
-                        <td id="p-tel-kecemasan"></td>
-                    </tr>
-                </table>
-
-                <h2 class="a4-section-title">E. Rujukan (References)</h2>
-                <table class="a4-table">
-                    <thead>
-                        <tr>
-                            <th class="w-1/12 text-center">Bil</th>
-                            <th class="w-3/12">Nama</th>
-                            <th class="w-3/12">Jawatan</th>
-                            <th class="w-3/12">Syarikat/Organisasi</th>
-                            <th class="w-2/12">No Telefon</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="text-center font-medium">1</td>
-                            <td id="p-ref1-nama"></td>
-                            <td id="p-ref1-jawatan"></td>
-                            <td id="p-ref1-syarikat"></td>
-                            <td id="p-ref1-tel"></td>
-                        </tr>
-                        <tr>
-                            <td class="text-center font-medium">2</td>
-                            <td id="p-ref2-nama"></td>
-                            <td id="p-ref2-jawatan"></td>
-                            <td id="p-ref2-syarikat"></td>
-                            <td id="p-ref2-tel"></td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <!-- Footer A4 -->
-                <div class="absolute bottom-6 right-8 text-xs text-gray-500">Muka Surat 2 / 3</div>
-            </div>
-
-            <!-- PAGE 3: Siasatan, Gaji, Persetujuan -->
-            <div class="a4-container">
-                
-                <h2 class="a4-section-title mt-0">F. Lain-lain Maklumat</h2>
-                <table class="a4-table">
-                    <tr>
-                        <td class="w-3/4 font-semibold">Adakah anda pernah mempunyai rekod jenayah, sedang dalam siasatan, atau pernah disabitkan atas mana-mana kesalahan di bawah undang-undang?</td>
-                        <td class="w-1/4 text-center font-bold" id="p-jenayah"></td>
-                    </tr>
-                    <tr id="p-jenayah-alasan-row" class="hidden">
-                        <td colspan="2" class="bg-red-50">
-                            <span class="font-semibold text-red-800">Alasan / Butiran: </span>
-                            <span id="p-alasan-jenayah" class="text-red-900"></span>
-                        </td>
-                    </tr>
-                </table>
-
-                <table class="a4-table mt-4 w-1/2">
-                    <tr>
-                        <td class="w-1/2 font-semibold bg-gray-50">Gaji Dipohon</td>
-                        <td class="font-bold text-lg">RM <span id="p-gaji">0.00</span></td>
-                    </tr>
-                </table>
-
-                <h2 class="a4-section-title">G. Perakuan & Persetujuan</h2>
-                
-                <div class="border border-black p-4 mt-4 bg-gray-50 text-sm text-justify">
-                    <p class="font-bold mb-2">Persetujuan Semakan Latar Belakang:</p>
-                    <div class="flex items-center gap-2 mb-2 font-bold text-lg">
-                        <div class="w-5 h-5 border border-black flex items-center justify-center" id="p-box-ya"></div> YA
-                        <div class="w-5 h-5 border border-black flex items-center justify-center ml-4" id="p-box-tidak"></div> TIDAK
-                    </div>
-                    <p>Saya bersetuju untuk pihak organisasi menjalankan semakan latar belakang sekiranya diperlukan. Dengan persetujuan ini, saya membenarkan pihak organisasi mendapatkan, menyemak dan mengesahkan maklumat berkaitan latar belakang saya daripada pihak berkaitan tertakluk kepada undang-undang dan kerahsiaan yang berkuat kuasa.</p>
-                </div>
-
-                <div class="mt-6 text-sm text-justify">
-                    <p>Saya dengan ini mengaku bahawa segala maklumat yang diberikan dalam borang permohonan ini adalah benar dan tepat. Saya memahami bahawa sebarang maklumat palsu boleh menyebabkan permohonan saya ditolak atau perkhidmatan saya ditamatkan serta-merta sekiranya saya telah ditawarkan pekerjaan.</p>
-                </div>
-
-                <div class="mt-6 p-2 text-xs font-semibold text-center italic border-t border-b border-dashed border-gray-400 text-gray-700">
-                    Maklumat yang diperoleh akan dirahsiakan dan hanya digunakan untuk tujuan penilaian permohonan sahaja.
-                </div>
-
-                <div class="mt-16 flex justify-between items-end">
-                    <div>
-                        <p class="mb-2 text-sm">Tarikh Permohonan:</p>
-                        <p class="font-bold border-b border-black w-40 text-center pb-1" id="p-tarikh-hari-ini"></p>
-                    </div>
-                    <div class="text-center flex flex-col items-center">
-                        <div class="w-48 h-24 border-b border-black flex items-end justify-center pb-1 relative">
-                            <!-- Signature Image will be placed here -->
-                            <img id="p-signature-img" src="" class="absolute bottom-0 h-full object-contain hidden max-w-[190px]">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="w-2/3 pr-4">
+                            <table class="w-full text-sm">
+                                <tr>
+                                    <td class="font-semibold py-1 w-1/3">Jawatan Dipohon</td>
+                                    <td class="py-1 px-2">:</td>
+                                    <td class="py-1 border-b border-dashed border-gray-400 font-medium text-blue-700" id="p-jawatan"></td>
+                                </tr>
+                            </table>
                         </div>
-                        <p class="mt-2 text-sm font-semibold">Tandatangan Pemohon</p>
+                        <!-- Photo Display -->
+                        <div class="w-[35mm] h-[45mm] border border-gray-400 flex items-center justify-center bg-gray-50 overflow-hidden relative">
+                            <span class="text-xs text-gray-400 text-center px-2 absolute z-0">Gambar Ukuran Pasport</span>
+                            <img id="p-photo" src="" class="hidden w-full h-full object-cover relative z-10">
+                        </div>
                     </div>
+
+                    <h2 class="a4-section-title">A. Maklumat Peribadi</h2>
+                    <table class="a4-table">
+                        <tr>
+                            <td class="w-1/3 font-semibold bg-gray-50">Nama Penuh</td>
+                            <td colspan="3" id="p-nama" class="uppercase font-medium"></td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold bg-gray-50">No. Kad Pengenalan</td>
+                            <td id="p-ic"></td>
+                            <td class="font-semibold bg-gray-50 w-1/4">Tarikh Lahir</td>
+                            <td id="p-dob"></td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold bg-gray-50">Jantina</td>
+                            <td id="p-jantina"></td>
+                            <td class="font-semibold bg-gray-50">Taraf Perkahwinan</td>
+                            <td id="p-status_kahwin"></td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold bg-gray-50 align-top">Alamat Semasa</td>
+                            <td colspan="3" id="p-alamat" class="whitespace-pre-line uppercase"></td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold bg-gray-50">No. Telefon Bimbit</td>
+                            <td id="p-tel-bimbit"></td>
+                            <td class="font-semibold bg-gray-50">No. Telefon Rumah</td>
+                            <td id="p-tel-rumah"></td>
+                        </tr>
+                    </table>
+
+                    <h2 class="a4-section-title">B. Maklumat Akademik</h2>
+                    <table class="a4-table text-center" id="p-academic-table">
+                        <thead>
+                            <tr>
+                                <th class="text-center w-[15%]">Tahun Dari</th>
+                                <th class="text-center w-[15%]">Tahun Hingga</th>
+                                <th class="text-left w-[40%]">Sekolah / Pusat Pengajian</th>
+                                <th class="text-left w-[30%]">Kelulusan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="p-academic-tbody">
+                            <tr><td colspan="4" class="text-gray-400 italic text-center py-2">Sila tambah maklumat di ruangan borang</td></tr>
+                        </tbody>
+                    </table>
+                    
+                    <!-- Footer A4 -->
+                    <div class="absolute bottom-6 right-8 text-xs text-gray-500">Muka Surat 1 / 3</div>
                 </div>
 
-                <!-- Footer A4 -->
-                <div class="absolute bottom-6 right-8 text-xs text-gray-500">Muka Surat 3 / 3</div>
+                <!-- PAGE 2: Pengalaman & Kewangan -->
+                <div class="a4-container">
+                    <h2 class="a4-section-title mt-0">C. Pengalaman Kerja</h2>
+                    <table class="a4-table text-center" id="p-work-table">
+                        <thead>
+                            <tr>
+                                <th class="text-center w-[15%]">Tahun Dari</th>
+                                <th class="text-center w-[15%]">Tahun Hingga</th>
+                                <th class="text-left w-[40%]">Majikan</th>
+                                <th class="text-left w-[30%]">Jawatan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="p-work-tbody">
+                            <tr><td colspan="4" class="text-gray-400 italic text-center py-2">Sila tambah maklumat di ruangan borang</td></tr>
+                        </tbody>
+                    </table>
+
+                    <h2 class="a4-section-title">D. Maklumat Kewangan & Kecemasan</h2>
+                    <table class="a4-table">
+                        <tr>
+                            <td class="w-1/3 font-semibold bg-gray-50">No. SOCSO</td>
+                            <td id="p-socso"></td>
+                            <td class="w-1/4 font-semibold bg-gray-50">No. KWSP</td>
+                            <td id="p-kwsp"></td>
+                        </tr>
+                    </table>
+                    <br>
+                    <table class="a4-table">
+                        <tr>
+                            <td colspan="4" class="font-semibold bg-gray-200 text-center">Hubungan Kecemasan</td>
+                        </tr>
+                        <tr>
+                            <td class="w-1/4 font-semibold bg-gray-50">Penama</td>
+                            <td id="p-nama-kecemasan" colspan="3"></td>
+                        </tr>
+                        <tr>
+                            <td class="font-semibold bg-gray-50">Hubungan</td>
+                            <td id="p-hubungan-kecemasan"></td>
+                            <td class="w-1/4 font-semibold bg-gray-50">No Telefon (<span id="p-jenis-tel-kecemasan"></span>)</td>
+                            <td id="p-tel-kecemasan"></td>
+                        </tr>
+                    </table>
+
+                    <h2 class="a4-section-title">E. Rujukan (References)</h2>
+                    <table class="a4-table">
+                        <thead>
+                            <tr>
+                                <th class="w-1/12 text-center">Bil</th>
+                                <th class="w-3/12">Nama</th>
+                                <th class="w-3/12">Jawatan</th>
+                                <th class="w-3/12">Syarikat/Organisasi</th>
+                                <th class="w-2/12">No Telefon</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-center font-medium">1</td>
+                                <td id="p-ref1-nama"></td>
+                                <td id="p-ref1-jawatan"></td>
+                                <td id="p-ref1-syarikat"></td>
+                                <td id="p-ref1-tel"></td>
+                            </tr>
+                            <tr>
+                                <td class="text-center font-medium">2</td>
+                                <td id="p-ref2-nama"></td>
+                                <td id="p-ref2-jawatan"></td>
+                                <td id="p-ref2-syarikat"></td>
+                                <td id="p-ref2-tel"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Footer A4 -->
+                    <div class="absolute bottom-6 right-8 text-xs text-gray-500">Muka Surat 2 / 3</div>
+                </div>
+
+                <!-- PAGE 3: Siasatan, Gaji, Persetujuan -->
+                <div class="a4-container">
+                    
+                    <h2 class="a4-section-title mt-0">F. Lain-lain Maklumat</h2>
+                    <table class="a4-table">
+                        <tr>
+                            <td class="w-3/4 font-semibold">Adakah anda pernah mempunyai rekod jenayah, sedang dalam siasatan, atau pernah disabitkan atas mana-mana kesalahan di bawah undang-undang?</td>
+                            <td class="w-1/4 text-center font-bold" id="p-jenayah"></td>
+                        </tr>
+                        <tr id="p-jenayah-alasan-row" class="hidden">
+                            <td colspan="2" class="bg-red-50">
+                                <span class="font-semibold text-red-800">Alasan / Butiran: </span>
+                                <span id="p-alasan-jenayah" class="text-red-900"></span>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table class="a4-table mt-4 w-1/2">
+                        <tr>
+                            <td class="w-1/2 font-semibold bg-gray-50">Gaji Dipohon</td>
+                            <td class="font-bold text-lg">RM <span id="p-gaji">0.00</span></td>
+                        </tr>
+                    </table>
+
+                    <h2 class="a4-section-title">G. Perakuan & Persetujuan</h2>
+                    
+                    <div class="border border-black p-4 mt-4 bg-gray-50 text-sm text-justify">
+                        <p class="font-bold mb-2">Persetujuan Semakan Latar Belakang:</p>
+                        <div class="flex items-center gap-2 mb-2 font-bold text-lg">
+                            <div class="w-5 h-5 border border-black flex items-center justify-center" id="p-box-ya"></div> YA
+                            <div class="w-5 h-5 border border-black flex items-center justify-center ml-4" id="p-box-tidak"></div> TIDAK
+                        </div>
+                        <p>Saya bersetuju untuk pihak organisasi menjalankan semakan latar belakang sekiranya diperlukan. Dengan persetujuan ini, saya membenarkan pihak organisasi mendapatkan, menyemak dan mengesahkan maklumat berkaitan latar belakang saya daripada pihak berkaitan tertakluk kepada undang-undang dan kerahsiaan yang berkuat kuasa.</p>
+                    </div>
+
+                    <div class="mt-6 text-sm text-justify">
+                        <p>Saya dengan ini mengaku bahawa segala maklumat yang diberikan dalam borang permohonan ini adalah benar dan tepat. Saya memahami bahawa sebarang maklumat palsu boleh menyebabkan permohonan saya ditolak atau perkhidmatan saya ditamatkan serta-merta sekiranya saya telah ditawarkan pekerjaan.</p>
+                    </div>
+
+                    <div class="mt-16 flex justify-between items-end">
+                        <div>
+                            <p class="mb-2 text-sm">Tarikh Permohonan:</p>
+                            <p class="font-bold border-b border-black w-40 text-center pb-1" id="p-tarikh-hari-ini"></p>
+                        </div>
+                        <div class="text-center flex flex-col items-center">
+                            <div class="w-48 h-24 border-b border-black flex items-end justify-center pb-1 relative">
+                                <!-- Signature Image will be placed here -->
+                                <img id="p-signature-img" src="" class="absolute bottom-0 h-full object-contain hidden max-w-[190px]">
+                            </div>
+                            <p class="mt-2 text-sm font-semibold">Tandatangan Pemohon</p>
+                        </div>
+                    </div>
+
+                    <!-- Notis Kerahsiaan A4 -->
+                    <div class="absolute bottom-12 left-20 right-20 p-2 text-xs font-semibold text-center italic border-t border-b border-dashed border-gray-400 text-gray-700">
+                        Maklumat yang diperoleh akan dirahsiakan dan hanya digunakan untuk tujuan penilaian permohonan sahaja.
+                    </div>
+
+                    <!-- Footer A4 -->
+                    <div class="absolute bottom-6 right-8 text-xs text-gray-500">Muka Surat 3 / 3</div>
+                </div>
             </div>
 
         </div>
@@ -815,11 +813,9 @@
             
             if (show) {
                 container.classList.remove('hidden');
-                textarea.required = true;
                 previewRow.classList.remove('hidden');
             } else {
                 container.classList.add('hidden');
-                textarea.required = false;
                 previewRow.classList.add('hidden');
             }
         }
@@ -952,12 +948,8 @@
             ctx.lineJoin = 'round';
             ctx.lineCap = 'round';
             ctx.lineWidth = 2;
-            
-            // Re-stroke from data if needed (complex, so we just clear on resize for simplicity)
-            // It's better to redraw, but for basic implementation we reset.
         }
         window.addEventListener('resize', resizeCanvas);
-        // initial call
         setTimeout(resizeCanvas, 100);
 
         function startDrawing(e) {
@@ -1014,34 +1006,171 @@
         }
 
         function updateSignaturePreview() {
-            // Only update if not entirely blank (simple check)
             const dataUrl = canvas.toDataURL();
             pSigImg.src = dataUrl;
             pSigImg.classList.remove('hidden');
         }
 
-        // FORM SUBMIT SIMULATION
-        function submitForm() {
-            // Basic validation for signature and photo
-            if (document.getElementById('p-photo').src.includes('base64') === false && document.getElementById('p-photo').src === '') {
-                alert('Sila muat naik gambar profil.'); // Note: Using native alert for simple validation fallback, but UI message preferred.
-                return;
+        // KAWALAN TINDAKAN BORANG (PREVIEW -> SUBMIT)
+        let isPreviewMode = false;
+        
+        function handleFormAction() {
+            if (!isPreviewMode) {
+                // Tukar butang
+                isPreviewMode = true;
+                document.getElementById('preview-btn').classList.add('hidden');
+                document.getElementById('submit-btn').classList.remove('hidden');
+                
+                // Highlight atau scroll ke bahagian preview
+                if(window.innerWidth < 1024) {
+                    document.getElementById('preview-panel').scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    const previewPanel = document.getElementById('preview-panel');
+                    previewPanel.classList.add('ring-4', 'ring-blue-500', 'transition-all');
+                    setTimeout(() => previewPanel.classList.remove('ring-4', 'ring-blue-500'), 2000);
+                }
+                
+                alert("Sila semak dokumen A4 anda. Jika semua maklumat adalah tepat, klik butang 'Hantar & Muat Turun PDF'.");
             }
-            if (pSigImg.src === '' || pSigImg.classList.contains('hidden')) {
-                alert('Sila turunkan tandatangan digital anda.');
-                return;
-            }
+        }
 
-            const successMsg = document.getElementById('success-msg');
-            successMsg.classList.remove('hidden');
+        // FORM SUBMIT & API INTEGRATION
+        async function submitForm() {
+            const btn = document.getElementById('submit-btn');
+            const btnIcon = document.getElementById('submit-icon');
+            const btnText = document.getElementById('submit-text');
             
-            // Scroll to top to see message
-            document.getElementById('form-panel').scrollTo({ top: 0, behavior: 'smooth' });
-            
-            // Hide message after 5 seconds
-            setTimeout(() => {
-                successMsg.classList.add('hidden');
-            }, 5000);
+            // UI Loading State
+            btn.disabled = true;
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+            btnIcon.className = 'fa-solid fa-spinner fa-spin mr-2';
+            btnText.textContent = 'Menjana PDF & Menyimpan Data...';
+
+            try {
+                // Helper Functions untuk kutip data awal
+                const getVal = id => document.getElementById(id) ? document.getElementById(id).value : '';
+                const getRadio = name => {
+                    const el = document.querySelector(`input[name="${name}"]:checked`);
+                    return el ? el.value : '';
+                };
+
+                const namaPemohon = getVal('f-nama').replace(/[^a-zA-Z0-9]/g, "_"); // Format nama untuk fail
+
+                // 1. Generate PDF secara Base64 menggunakan html2pdf
+                const element = document.getElementById('pdf-content');
+                const opt = {
+                    margin:       0,
+                    filename:     `Borang_Permohonan_${namaPemohon}.pdf`,
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2, useCORS: true, logging: false },
+                    jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+                };
+                
+                // Auto Muat turun PDF ke peranti pengguna
+                html2pdf().set(opt).from(element).save();
+
+                // Dapatkan Base64 URL untuk dihantar ke server
+                const pdfBase64 = await html2pdf().set(opt).from(element).output('datauristring');
+
+                // Format String Jadual
+                let akademikStr = '';
+                document.querySelectorAll('#academic-tbody tr').forEach((tr, idx) => {
+                    if(tr.querySelector('.ac-from')) {
+                        akademikStr += `${idx+1}. ${tr.querySelector('.ac-from').value}-${tr.querySelector('.ac-to').value}: ${tr.querySelector('.ac-school').value} (${tr.querySelector('.ac-qual').value})\n`;
+                    }
+                });
+
+                let pengalamanStr = '';
+                document.querySelectorAll('#work-tbody tr').forEach((tr, idx) => {
+                    if(tr.querySelector('.w-from')) {
+                        pengalamanStr += `${idx+1}. ${tr.querySelector('.w-from').value}-${tr.querySelector('.w-to').value}: ${tr.querySelector('.w-emp').value} (${tr.querySelector('.w-pos').value})\n`;
+                    }
+                });
+
+                // 2. Sediakan Payload Data JSON
+                const payload = {
+                    jawatan: getVal('f-jawatan'),
+                    nama: getVal('f-nama'),
+                    ic: getVal('f-ic'),
+                    dob: getVal('f-dob'),
+                    telRumah: getVal('f-tel-rumah'),
+                    telBimbit: getVal('f-tel-bimbit'),
+                    alamat: getVal('f-alamat'),
+                    jantina: getRadio('jantina'),
+                    statusKahwin: getRadio('status_kahwin'),
+                    akademikStr: akademikStr,
+                    pengalamanStr: pengalamanStr,
+                    socso: getVal('f-socso'),
+                    kwsp: getVal('f-kwsp'),
+                    namaKecemasan: getVal('f-nama-kecemasan'),
+                    hubunganKecemasan: getVal('f-hubungan-kecemasan'),
+                    jenisTelKecemasan: getVal('f-jenis-tel-kecemasan'),
+                    telKecemasan: getVal('f-tel-kecemasan'),
+                    jenayah: getRadio('jenayah'),
+                    alasanJenayah: getVal('f-alasan-jenayah'),
+                    gaji: getVal('f-gaji'),
+                    ref1Nama: getVal('f-ref1-nama'),
+                    ref1Jawatan: getVal('f-ref1-jawatan'),
+                    ref1Syarikat: getVal('f-ref1-syarikat'),
+                    ref1Tel: getVal('f-ref1-tel'),
+                    ref2Nama: getVal('f-ref2-nama'),
+                    ref2Jawatan: getVal('f-ref2-jawatan'),
+                    ref2Syarikat: getVal('f-ref2-syarikat'),
+                    ref2Tel: getVal('f-ref2-tel'),
+                    semak: getRadio('kebenaran_semak'),
+                    photoBase64: document.getElementById('p-photo').src, // Gambar Profile base64
+                    pdfBase64: pdfBase64 // PDF Keseluruhan base64
+                };
+
+                // 3. MASUKKAN URL GOOGLE APPS SCRIPT ANDA DI SINI
+                const APPSCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw8rrdUPCNHWOfXPNoK_H7qRYqccC2_I2dEA18VckX1kXDGqd7Y03oEcsa1HtTnC8p0vw/exec';
+                
+                if (APPSCRIPT_URL === 'MASUKKAN_URL_WEB_APP_APPS_SCRIPT_DI_SINI') {
+                    alert('Sila masukkan URL Web App Apps Script anda di dalam fail index.html terlebih dahulu.');
+                    throw new Error('URL Apps Script belum ditetapkan.');
+                }
+
+                // 4. Hantar Data melalui POST Request (fetch API)
+                const response = await fetch(APPSCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload),
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8',
+                    }
+                });
+
+                const result = await response.json();
+                
+                if(result.status === 'success') {
+                    // Paparkan mesej kejayaan
+                    const successMsg = document.getElementById('success-msg');
+                    successMsg.classList.remove('hidden');
+                    
+                    // Scroll ke atas
+                    document.getElementById('form-panel').scrollTo({ top: 0, behavior: 'smooth' });
+                    
+                    // Sembunyikan mesej selepas 8 saat
+                    setTimeout(() => {
+                        successMsg.classList.add('hidden');
+                    }, 8000);
+                    
+                    // (Pilihan) Anda boleh reset form di sini jika mahu
+                    // document.getElementById('application-form').reset();
+                    // clearSignature();
+                } else {
+                    alert('Ralat daripada pangkalan data: ' + result.message);
+                }
+
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Berlaku ralat sistem semasa menghantar data: " + error.message);
+            } finally {
+                // Pulihkan UI Butang
+                btn.disabled = false;
+                btn.classList.remove('opacity-75', 'cursor-not-allowed');
+                btnIcon.className = 'fa-solid fa-paper-plane mr-2';
+                btnText.textContent = 'Hantar Permohonan';
+            }
         }
 
     </script>
