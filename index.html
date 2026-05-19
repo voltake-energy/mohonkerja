@@ -50,9 +50,8 @@
 
         /* A4 Paper Styling */
         .a4-container {
-            width: 100%;
-            max-width: 210mm; /* A4 Width */
-            min-height: 275mm; /* A4 Height */
+            width: 210mm !important; /* Force exact A4 Width */
+            min-height: 297mm; /* Force exact A4 Height */
             background-color: white;
             color: black;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
@@ -62,6 +61,7 @@
             box-sizing: border-box;
             position: relative;
             page-break-after: always;
+            flex-shrink: 0;
         }
         
         /* Ensure A4 content stays black & white even in dark mode */
@@ -466,15 +466,15 @@
         </div>
 
         <!-- RIGHT PANEL: PREVIEW (A4) -->
-        <div class="w-full lg:w-1/2 panel-scroll bg-gray-200 dark:bg-gray-700 p-4 md:p-8 flex flex-col items-center" id="preview-panel">
+        <div class="w-full lg:w-1/2 panel-scroll bg-gray-200 dark:bg-gray-700 p-4 md:p-8 overflow-x-auto" id="preview-panel">
             
             <!-- Mobile helper text -->
-            <div class="lg:hidden text-center text-sm mb-4 text-gray-600 dark:text-gray-300 no-print">
-                <i class="fa-solid fa-eye mr-1"></i> Live Preview Dokumen
+            <div class="lg:hidden flex items-center justify-center p-3 mb-6 bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 border border-blue-200 dark:border-blue-800 rounded-lg text-sm font-medium shadow-sm no-print sticky left-0 right-0 w-[calc(100vw-32px)]">
+                <i class="fa-solid fa-arrows-left-right mr-2 text-lg animate-pulse"></i> Tatal (swipe) kiri & kanan untuk lihat saiz A4 sebenar
             </div>
 
             <!-- Wrapper untuk HTML2PDF Export agar style terjaga -->
-            <div id="pdf-content" class="w-full flex flex-col items-center">
+            <div id="pdf-content" class="mx-auto" style="width: 210mm; background-color: transparent;">
                 <!-- PAGE 1: Maklumat Asas -->
                 <div class="a4-container">
                     <div class="text-center border-b-2 border-black pb-4 mb-6 flex flex-col items-center">
