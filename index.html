@@ -718,6 +718,26 @@
         </div>
     </div>
 
+    <!-- Loading Overlay (Tunggu Jangan Tutup Skrin) -->
+    <div id="loading-overlay" class="hidden fixed inset-0 z-[999] flex items-center justify-center bg-white/95 dark:bg-gray-900/95 backdrop-blur-md transition-opacity duration-300 no-print">
+        <div class="flex flex-col items-center justify-center text-center p-6">
+            <!-- Animated Logo -->
+            <div class="relative mb-8">
+                <div class="absolute inset-0 bg-blue-500/20 dark:bg-blue-400/20 rounded-full blur-2xl animate-pulse"></div>
+                <img src="https://i.postimg.cc/sfWhtSf7/energy-services.png" alt="Voltake Logo" class="h-20 md:h-24 object-contain relative z-10 animate-bounce" style="animation-duration: 2s;">
+            </div>
+            
+            <!-- Spinner & Text -->
+            <div class="flex items-center gap-3 mb-3">
+                <i class="fa-solid fa-circle-notch fa-spin text-2xl text-blue-600 dark:text-blue-400"></i>
+                <h3 class="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">Memproses Permohonan...</h3>
+            </div>
+            <p class="text-gray-600 dark:text-gray-300 font-medium max-w-sm text-sm md:text-base">
+                Sila tunggu, <span class="text-red-500 dark:text-red-400 font-bold">jangan tutup skrin ini</span> sehingga proses penghantaran dan penjanaan PDF selesai.
+            </p>
+        </div>
+    </div>
+
     <!-- Javascript -->
     <script>
         // Set Tarikh Hari Ini
@@ -1095,12 +1115,14 @@
             const btn = document.getElementById('global-submit-btn');
             const btnIcon = document.getElementById('global-submit-icon');
             const btnText = document.getElementById('global-submit-text');
+            const loadingOverlay = document.getElementById('loading-overlay');
             
-            // UI Loading State
+            // UI Loading State (Button & Fullscreen Overlay)
             btn.disabled = true;
             btn.classList.add('opacity-75', 'cursor-not-allowed');
             btnIcon.className = 'fa-solid fa-spinner fa-spin mr-2';
             btnText.textContent = 'Menjana PDF & Menyimpan...';
+            loadingOverlay.classList.remove('hidden');
 
             try {
                 // Helper Functions untuk kutip data awal
@@ -1248,11 +1270,12 @@
                 console.error("Error:", error);
                 alert("Berlaku ralat sistem semasa menghantar data: " + error.message);
             } finally {
-                // Pulihkan UI Butang
+                // Pulihkan UI Butang & Tutup Loading Overlay
                 btn.disabled = false;
                 btn.classList.remove('opacity-75', 'cursor-not-allowed');
                 btnIcon.className = 'fa-solid fa-paper-plane mr-2';
                 btnText.textContent = 'Sah & Hantar PDF';
+                loadingOverlay.classList.add('hidden');
             }
         }
 
