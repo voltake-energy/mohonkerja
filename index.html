@@ -124,7 +124,6 @@
             box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
         }
 
-        /* STREAMING_CHUNK:Styling signature pad and layout panels... -->
         /* Signature Canvas */
         #signature-pad {
             border: 1px dashed #94a3b8;
@@ -190,11 +189,6 @@
         <!-- LEFT PANEL: FORM -->
         <div class="w-full lg:w-1/2 panel-scroll p-4 md:p-8 space-y-6" id="form-panel">
             
-            <div id="success-msg" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative shadow-sm" role="alert">
-                <strong class="font-bold"><i class="fa-solid fa-circle-check"></i> Berjaya!</strong>
-                <span class="block sm:inline">Permohonan, Gambar & PDF anda telah berjaya dihantar ke pangkalan data.</span>
-            </div>
-
             <form id="application-form" class="space-y-8" onsubmit="event.preventDefault(); handleFormAction();">
                 
                 <!-- Bahagian 1: Maklumat Asas -->
@@ -710,6 +704,20 @@
         </div>
     </div>
 
+    <!-- Success Modal Popup -->
+    <div id="success-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto overflow-x-hidden bg-black/50 backdrop-blur-sm p-4 transition-opacity duration-300 no-print">
+        <div class="relative w-full max-w-md bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 text-center transform transition-all">
+            <div class="w-20 h-20 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-5 border-4 border-white dark:border-gray-800 shadow-md">
+                <i class="fa-solid fa-check text-4xl text-green-500"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Berjaya!</h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-8 font-medium">Anda telah berjaya menghantar borang permohonan untuk di validate.</p>
+            <button onclick="closeSuccessModal()" class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-bold rounded-xl text-lg px-5 py-3 text-center transition-colors shadow-lg">
+                Kembali
+            </button>
+        </div>
+    </div>
+
     <!-- Javascript -->
     <script>
         // Set Tarikh Hari Ini
@@ -1072,6 +1080,16 @@
             }
         }
 
+        // FUNGSI TUTUP MODAL SUCCESS
+        function closeSuccessModal() {
+            const modal = document.getElementById('success-modal');
+            modal.classList.add('hidden');
+            
+            // Pilihan: Boleh muat semula page untuk borang baru, 
+            // atau biarkan user di borang yang telah di'reset'
+            // window.location.reload(); 
+        }
+
         // FORM SUBMIT & API INTEGRATION
         async function submitForm() {
             const btn = document.getElementById('global-submit-btn');
@@ -1211,23 +1229,18 @@
                 const result = await response.json();
                 
                 if(result.status === 'success') {
-                    // Paparkan mesej kejayaan
-                    const successMsg = document.getElementById('success-msg');
-                    successMsg.classList.remove('hidden');
                     
-                    // Scroll ke atas form
-                    document.getElementById('form-panel').scrollTo({ top: 0, behavior: 'smooth' });
-                    
-                    // Sembunyikan mesej selepas 8 saat
-                    setTimeout(() => {
-                        successMsg.classList.add('hidden');
-                    }, 8000);
+                    // Paparkan Custom Modal Popup Berjaya
+                    const modal = document.getElementById('success-modal');
+                    modal.classList.remove('hidden');
                     
                     // Reset UI borang kepada keadaan asal
                     editForm();
                     // (Pilihan) document.getElementById('application-form').reset();
                     // (Pilihan) clearSignature();
+                    
                 } else {
+                    // Jika nak guna modal untuk error juga boleh, tapi alert ringkas di bawah pun sudah memadai untuk error teknikal.
                     alert('Ralat daripada pangkalan data: ' + result.message);
                 }
 
