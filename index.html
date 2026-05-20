@@ -51,7 +51,7 @@
         /* A4 Paper Styling */
         .a4-container {
             width: 210mm !important; /* Force exact A4 Width */
-            min-height: 297mm; /* Force exact A4 Height */
+            min-height: 285mm; /* Force exact A4 Height */
             background-color: white;
             color: black;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
@@ -1096,19 +1096,50 @@
 
                 // 1. Generate PDF secara Base64 menggunakan html2pdf
                 const element = document.getElementById('pdf-content');
+                
+                // [BUG FIX]: Scroll container ke atas sepenuhnya sebelum render untuk elak blank space (scroll offset)
+                const previewPanel = document.getElementById('preview-panel');
+                const originalScrollTop = previewPanel.scrollTop;
+                const originalScrollLeft = previewPanel.scrollLeft;
+                previewPanel.scrollTop = 0;
+                previewPanel.scrollLeft = 0;
+                window.scrollTo(0, 0); // Paksa tatalan window utama ke atas juga
+
                 const opt = {
                     margin:       0,
                     filename:     `Borang_Permohonan_${namaPemohon}.pdf`,
                     image:        { type: 'jpeg', quality: 0.98 },
-                    html2canvas:  { scale: 2, useCORS: true, logging: false },
+                    html2canvas:  { 
+                        scale: 2, 
+                        useCORS: true, 
+                        logging: false,
+                        scrollY: 0, // Kunci paksi Y dari 0 (mengelak blank white space)
+                        scrollX: 0, // Kunci paksi X
+                        onclone: function(clonedDoc) {
+                            // [BUG FIX]: Buang margin & shadow dari bekas A4 ketika render supaya ukuran "ngam"
+                            const pages = clonedDoc.querySelectorAll('.a4-container');
+                            pages.forEach(page => {
+                                page.style.margin = '0';
+                                page.style.border = 'none';
+                                page.style.boxShadow = 'none';
+                            });
+                        }
+                    },
                     jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
                 };
                 
+                // Gunakan worker html2pdf supaya proses run sekali gus (jimat masa & memori)
+                const pdfWorker = html2pdf().set(opt).from(element);
+                
                 // Auto Muat turun PDF ke peranti pengguna
-                html2pdf().set(opt).from(element).save();
+                await pdfWorker.save();
 
                 // Dapatkan Base64 URL untuk dihantar ke server
-                const pdfBase64 = await html2pdf().set(opt).from(element).output('datauristring');
+                const pdfBase64 = await pdfWorker.output('datauristring');
+                
+                // Kembalikan posisi scroll seperti sedia kala
+                previewPanel.scrollTop = originalScrollTop;
+                previewPanel.scrollLeft = originalScrollLeft;
 
                 // Format String Jadual
                 let akademikStr = '';
